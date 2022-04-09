@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading;
 using Kaltura;
 using Kaltura.Enums;
@@ -39,10 +40,11 @@ namespace Kaltura.Tester
 {
     class ClientTester : ILogger
     {
-        private const int PARTNER_ID = @YOUR_PARTNER_ID@; //enter your partner id
-        private const string ADMIN_SECRET = "@YOUR_ADMIN_SECRET@"; //enter your admin secret
-        private const string SERVICE_URL = "@SERVICE_URL@";
-        private const string USER_ID = "testUser";
+        private const int PARTNER_ID = 27654; 
+        private const string SECRET = "650ef2ec536b6265b3e7c762e6e5e786";
+        private const string ADMIN_SECRET = "f593196821ee235861575feb05310747"; 
+        private const string SERVICE_URL = "https://www.kaltura.com";
+        private const string USER_ID = "millsTest";
 
         private static int code = 0;
         private static HashSet<string> tests = new HashSet<string>();
@@ -62,7 +64,7 @@ namespace Kaltura.Tester
             public BaseTest()
             {
                 client = new Client(GetConfig());
-                client.KS = client.GenerateSession(PARTNER_ID, ADMIN_SECRET, USER_ID, SessionType.ADMIN, 86400, "");
+                client.KS = client.GenerateSession(PARTNER_ID, ADMIN_SECRET, USER_ID, SessionType.ADMIN, 86400, "edit: *");
 
                 id = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 20);
             }
@@ -90,7 +92,8 @@ namespace Kaltura.Tester
         {
             // setting chunk size to a small chunk, because demo file is 500k size.
             // in actual implementation, a chunk size of 10MB is good practice.
-            public const int CHUNK_SIZE = 10240;
+            public const long CHUNK_SIZE = 10485760;
+            //public const int CHUNK_SIZE = 10240; // 10MB
 
             private Stream chunkFile;
             private OnCompletedHandler<UploadToken> handler;
@@ -102,7 +105,7 @@ namespace Kaltura.Tester
 
                 byte[] chunk = new byte[CHUNK_SIZE];
                 fileStream.Seek(offset, SeekOrigin.Begin);
-                fileStream.Read(chunk, 0, CHUNK_SIZE);
+                fileStream.Read(chunk, 0, (int)CHUNK_SIZE);
                 chunkFile = new MemoryStream(chunk);
                 UploadTokenService.Upload(tokenId, chunkFile, resume, finalChunk, offset)
                     .SetCompletion(new OnCompletedHandler<UploadToken>(OnComplete))
@@ -124,7 +127,8 @@ namespace Kaltura.Tester
 
         class SampleThreadedChunkUploadTest : BaseTest
         {
-            const string fname = "DemoVideo.flv";
+            //const string fname = @"D:\Mills\Kaltura\KalturaGeneratedAPIClientsCsharp\KalturaClientTester\DemoVideo.flv";
+            private string fname = @"D:\Users\mills\Videos\Helfgott_Ben-52910-01-V01-5000000003488669.mp4";
             const string mediaName = "C# Media Entry Uploaded in chunks using threads";
 
             private UploadToken token;
@@ -132,7 +136,7 @@ namespace Kaltura.Tester
 
             private FileStream fileStream;
             private int maxUploadThreads = 4;
-            private int lastOffset;
+            private long lastOffset;
             private long fileSize;
             private List<ChunkUpload> uploads = new List<ChunkUpload>();
 
@@ -148,9 +152,23 @@ namespace Kaltura.Tester
                     .SetCompletion(new OnCompletedHandler<UploadToken>(OnUploadTokenAddComplete))
                     .Execute(client);
 
-                MediaEntry mediaEntry = new MediaEntry();
-                mediaEntry.Name = mediaName;
-                mediaEntry.MediaType = MediaType.VIDEO;
+                //var entry = new BaseEntry
+                //{
+                //    Categories = "test",
+                //    UserId = USER_ID,
+                //    Tags = "test",
+                //    AdminTags = "user" + USER_ID + " upload",
+                //    Name = mediaName
+                //};
+                //BaseEntryService.Add(entry, EntryType.AUTOMATIC);
+
+                MediaEntry mediaEntry = new MediaEntry
+                {
+                    Name = mediaName,
+                    MediaType = MediaType.VIDEO,
+                    Tags = "test"
+                };
+
                 MediaService.Add(mediaEntry)
                     .SetCompletion(new OnCompletedHandler<MediaEntry>(OnMediaAddComplete))
                     .Execute(client);
@@ -211,7 +229,7 @@ namespace Kaltura.Tester
                 // start few threads with chunk upload
                 for (int i = 0; i < maxUploadThreads; i++)
                 {
-                    int offset = lastOffset;
+                    long offset = lastOffset;
                     if ((offset + ChunkUpload.CHUNK_SIZE) < fileSize)
                     {
                         lastOffset += ChunkUpload.CHUNK_SIZE;
@@ -235,9 +253,16 @@ namespace Kaltura.Tester
                 {
                     if ((lastOffset + ChunkUpload.CHUNK_SIZE) < fileSize)
                     {
+
+                        Console.WriteLine($"\r\nlastOffset: {lastOffset}\r\n");
                         // for each ended upload start a new one
-                        int offset = lastOffset;
+                        long offset = lastOffset;
                         lastOffset += ChunkUpload.CHUNK_SIZE;
+
+                        if (offset <= 0)
+                        {
+                            throw new Exception("offset < 0");
+                        }
                         ChunkUpload upload = new ChunkUpload(new OnCompletedHandler<UploadToken>(OnChunkComplete), client, token.Id, fileStream, offset);
                         uploads.Add(upload);
                     }
@@ -1225,40 +1250,130 @@ namespace Kaltura.Tester
                 done(id);
             }
         }
-        
+
+        public static void MediaAdd()
+        {
+            var client = new Client(GetConfig());
+            client.KS = client.GenerateSession(PARTNER_ID, ADMIN_SECRET, USER_ID, SessionType.ADMIN, 86400, "edit: *");
+
+            var entry = new MediaEntry()
+            {
+                Categories = "test",
+                UserId = USER_ID,
+                AdminTags = "user" + USER_ID + " upload",
+                MediaType = MediaType.VIDEO,
+                Tags = "test",
+                Name = "Mills test KalturaClient New"
+            };
+
+            //Object result = client.MediaService.Add(entry);
+
+            bool done = false;
+
+            OnCompletedHandler<MediaEntry> handler = new OnCompletedHandler<MediaEntry>(
+                (MediaEntry result, Exception e) =>
+                {
+                    //CodeExample.PrintObject(result);
+                    done = true;
+                });
+            MediaService.Add(entry)
+                .SetCompletion(handler)
+                .Execute(client);
+
+
+            while (!done)
+            {
+                Thread.Sleep(100);
+            }
+        }
+
+        public static void MediaAdd1()
+        {
+            var client = new Client(GetConfig());
+            client.KS = client.GenerateSession(PARTNER_ID, ADMIN_SECRET, USER_ID, SessionType.ADMIN, 86400, "edit: *");
+
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            //byte[] buffer;
+            //string paramsString = "apiVersion=3.0&clientTag=dotnet&expiry=86400&format=2&partnerId=27654&privileges=&secret=f593196821ee235861575feb05310747&sig=75bbd6e17f70dbb0728623853018768e&type=2&userId=mills";
+            //// build request
+            //var url = "https://www.kaltura.com//api_v3/index.php?service=session&action=start";
+            //HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
+            //request.Timeout = 100000;
+            //request.Method = "POST";
+            //buffer = System.Text.Encoding.UTF8.GetBytes(paramsString);
+            //request.ContentType = "application/x-www-form-urlencoded";
+            //request.ContentLength = paramsString.Length;
+            //Stream requestStream = request.GetRequestStream();
+            //requestStream.Write(buffer, 0, buffer.Length);
+            //requestStream.Close();
+
+            bool done = false;
+            MediaEntry entry = new MediaEntry();
+
+            OnCompletedHandler<MediaEntry> handler = new OnCompletedHandler<MediaEntry>(
+                (MediaEntry result, Exception e) =>
+                {
+                    //CodeExample.PrintObject(result);
+                    done = true;
+                });
+            MediaService.Add(entry)
+                .SetCompletion(handler)
+                .Execute(client);
+
+
+            while (!done)
+            {
+                Thread.Sleep(100);
+            }
+
+        }
+
         static void Main(string[] args)
         {
             uniqueTag = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 20);
 
             Console.WriteLine("Starting C# Kaltura API Client Library");
 
+            //try
+            //{
+            //    MediaAdd();
+
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine(e);
+
+            //    throw;
+            //}
+
             BaseTest tester;
-            if(args.Length > 0 && args[0].Equals("--with-threads"))
-            {
-                tester = new SampleThreadedChunkUploadTest();
-                tests.Add(tester.getId());
-                tester.test();
-            }
-
-            tester = new ResponseProfileTest();
+            //if (args.Length > 0 && args[0].Equals("--with-threads"))
+            //{
+            tester = new SampleThreadedChunkUploadTest();
             tests.Add(tester.getId());
             tester.test();
+            //}
 
-            tester = new ReplaceVideoFlavorAndAddCaptionTest();
-            tests.Add(tester.getId());
-            tester.test();
+            //tester = new ResponseProfileTest();
+            //tests.Add(tester.getId());
+            //tester.test();
 
-            tester = new MetadataTest();
-            tests.Add(tester.getId());
-            tester.test();
+            //tester = new ReplaceVideoFlavorAndAddCaptionTest();
+            //tests.Add(tester.getId());
+            //tester.test();
 
-            tester = new AdvancedMultiRequestTest();
-            tests.Add(tester.getId());
-            tester.test();
+            //tester = new MetadataTest();
+            //tests.Add(tester.getId());
+            //tester.test();
 
-            tester = new PlaylistExecuteMultiRequestTest();
-            tests.Add(tester.getId());
-            tester.test();
+            //tester = new AdvancedMultiRequestTest();
+            //tests.Add(tester.getId());
+            //tester.test();
+
+            //tester = new PlaylistExecuteMultiRequestTest();
+            //tests.Add(tester.getId());
+            //tester.test();
 
             while (tests.Count > 0)
             {

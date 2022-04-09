@@ -122,6 +122,9 @@ namespace Kaltura.Request
             var cts = new CancellationTokenSource();
             cts.CancelAfter(TimeSpan.FromMilliseconds(timeoutMs));
 
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
             try
             {
                 var content = GetPostBodyHttpContent(files, requestBodyStr);
