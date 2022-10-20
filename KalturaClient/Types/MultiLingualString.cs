@@ -35,80 +35,61 @@ using Newtonsoft.Json.Linq;
 
 namespace Kaltura.Types
 {
-	public class ExportToCsvOptions : ObjectBase
+	public class MultiLingualString : ObjectBase
 	{
 		#region Constants
-		public const string FORMAT = "format";
-		public const string TYPE_EQUAL = "typeEqual";
-		public const string DEFAULT_HEADER = "defaultHeader";
+		public const string LANGUAGE = "language";
+		public const string VALUE = "value";
 		#endregion
 
 		#region Private Fields
-		private string _Format = null;
-		private EntryType _TypeEqual = null;
-		private NullableBoolean _DefaultHeader = (NullableBoolean)Int32.MinValue;
+		private string _Language = null;
+		private string _Value = null;
 		#endregion
 
 		#region Properties
 		/// <summary>
-		/// Use FormatAsDouble property instead
+		/// Use LanguageAsDouble property instead
 		/// </summary>
 		[JsonProperty]
-		public string Format
+		public string Language
 		{
-			get { return _Format; }
+			get { return _Language; }
 			set 
 			{ 
-				_Format = value;
-				OnPropertyChanged("Format");
+				_Language = value;
+				OnPropertyChanged("Language");
 			}
 		}
 		/// <summary>
-		/// Use TypeEqualAsDouble property instead
+		/// Use ValueAsDouble property instead
 		/// </summary>
 		[JsonProperty]
-		public EntryType TypeEqual
+		public string Value
 		{
-			get { return _TypeEqual; }
+			get { return _Value; }
 			set 
 			{ 
-				_TypeEqual = value;
-				OnPropertyChanged("TypeEqual");
-			}
-		}
-		/// <summary>
-		/// Use DefaultHeaderAsDouble property instead
-		/// </summary>
-		[JsonProperty]
-		public NullableBoolean DefaultHeader
-		{
-			get { return _DefaultHeader; }
-			set 
-			{ 
-				_DefaultHeader = value;
-				OnPropertyChanged("DefaultHeader");
+				_Value = value;
+				OnPropertyChanged("Value");
 			}
 		}
 		#endregion
 
 		#region CTor
-		public ExportToCsvOptions()
+		public MultiLingualString()
 		{
 		}
 
-		public ExportToCsvOptions(JToken node) : base(node)
+		public MultiLingualString(JToken node) : base(node)
 		{
-			if(node["format"] != null)
+			if(node["language"] != null)
 			{
-				this._Format = node["format"].Value<string>();
+				this._Language = node["language"].Value<string>();
 			}
-			if(node["typeEqual"] != null)
+			if(node["value"] != null)
 			{
-				this._TypeEqual = (EntryType)StringEnum.Parse(typeof(EntryType), node["typeEqual"].Value<string>());
-			}
-			if(node["defaultHeader"] != null)
-			{
-				this._DefaultHeader = (NullableBoolean)ParseEnum(typeof(NullableBoolean), node["defaultHeader"].Value<string>());
+				this._Value = node["value"].Value<string>();
 			}
 		}
 		#endregion
@@ -118,22 +99,19 @@ namespace Kaltura.Types
 		{
 			Params kparams = base.ToParams(includeObjectType);
 			if (includeObjectType)
-				kparams.AddReplace("objectType", "KalturaExportToCsvOptions");
-			kparams.AddIfNotNull("format", this._Format);
-			kparams.AddIfNotNull("typeEqual", this._TypeEqual);
-			kparams.AddIfNotNull("defaultHeader", this._DefaultHeader);
+				kparams.AddReplace("objectType", "KalturaMultiLingualString");
+			kparams.AddIfNotNull("language", this._Language);
+			kparams.AddIfNotNull("value", this._Value);
 			return kparams;
 		}
 		protected override string getPropertyName(string apiName)
 		{
 			switch(apiName)
 			{
-				case FORMAT:
-					return "Format";
-				case TYPE_EQUAL:
-					return "TypeEqual";
-				case DEFAULT_HEADER:
-					return "DefaultHeader";
+				case LANGUAGE:
+					return "Language";
+				case VALUE:
+					return "Value";
 				default:
 					return base.getPropertyName(apiName);
 			}

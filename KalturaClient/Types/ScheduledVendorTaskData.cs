@@ -35,80 +35,80 @@ using Newtonsoft.Json.Linq;
 
 namespace Kaltura.Types
 {
-	public class ExportToCsvOptions : ObjectBase
+	public class ScheduledVendorTaskData : VendorTaskData
 	{
 		#region Constants
-		public const string FORMAT = "format";
-		public const string TYPE_EQUAL = "typeEqual";
-		public const string DEFAULT_HEADER = "defaultHeader";
+		public const string START_DATE = "startDate";
+		public const string END_DATE = "endDate";
+		public const string SCHEDULED_EVENT_ID = "scheduledEventId";
 		#endregion
 
 		#region Private Fields
-		private string _Format = null;
-		private EntryType _TypeEqual = null;
-		private NullableBoolean _DefaultHeader = (NullableBoolean)Int32.MinValue;
+		private int _StartDate = Int32.MinValue;
+		private int _EndDate = Int32.MinValue;
+		private int _ScheduledEventId = Int32.MinValue;
 		#endregion
 
 		#region Properties
 		/// <summary>
-		/// Use FormatAsDouble property instead
+		/// Use StartDateAsDouble property instead
 		/// </summary>
 		[JsonProperty]
-		public string Format
+		public int StartDate
 		{
-			get { return _Format; }
+			get { return _StartDate; }
 			set 
 			{ 
-				_Format = value;
-				OnPropertyChanged("Format");
+				_StartDate = value;
+				OnPropertyChanged("StartDate");
 			}
 		}
 		/// <summary>
-		/// Use TypeEqualAsDouble property instead
+		/// Use EndDateAsDouble property instead
 		/// </summary>
 		[JsonProperty]
-		public EntryType TypeEqual
+		public int EndDate
 		{
-			get { return _TypeEqual; }
+			get { return _EndDate; }
 			set 
 			{ 
-				_TypeEqual = value;
-				OnPropertyChanged("TypeEqual");
+				_EndDate = value;
+				OnPropertyChanged("EndDate");
 			}
 		}
 		/// <summary>
-		/// Use DefaultHeaderAsDouble property instead
+		/// Use ScheduledEventIdAsDouble property instead
 		/// </summary>
 		[JsonProperty]
-		public NullableBoolean DefaultHeader
+		public int ScheduledEventId
 		{
-			get { return _DefaultHeader; }
+			get { return _ScheduledEventId; }
 			set 
 			{ 
-				_DefaultHeader = value;
-				OnPropertyChanged("DefaultHeader");
+				_ScheduledEventId = value;
+				OnPropertyChanged("ScheduledEventId");
 			}
 		}
 		#endregion
 
 		#region CTor
-		public ExportToCsvOptions()
+		public ScheduledVendorTaskData()
 		{
 		}
 
-		public ExportToCsvOptions(JToken node) : base(node)
+		public ScheduledVendorTaskData(JToken node) : base(node)
 		{
-			if(node["format"] != null)
+			if(node["startDate"] != null)
 			{
-				this._Format = node["format"].Value<string>();
+				this._StartDate = ParseInt(node["startDate"].Value<string>());
 			}
-			if(node["typeEqual"] != null)
+			if(node["endDate"] != null)
 			{
-				this._TypeEqual = (EntryType)StringEnum.Parse(typeof(EntryType), node["typeEqual"].Value<string>());
+				this._EndDate = ParseInt(node["endDate"].Value<string>());
 			}
-			if(node["defaultHeader"] != null)
+			if(node["scheduledEventId"] != null)
 			{
-				this._DefaultHeader = (NullableBoolean)ParseEnum(typeof(NullableBoolean), node["defaultHeader"].Value<string>());
+				this._ScheduledEventId = ParseInt(node["scheduledEventId"].Value<string>());
 			}
 		}
 		#endregion
@@ -118,22 +118,22 @@ namespace Kaltura.Types
 		{
 			Params kparams = base.ToParams(includeObjectType);
 			if (includeObjectType)
-				kparams.AddReplace("objectType", "KalturaExportToCsvOptions");
-			kparams.AddIfNotNull("format", this._Format);
-			kparams.AddIfNotNull("typeEqual", this._TypeEqual);
-			kparams.AddIfNotNull("defaultHeader", this._DefaultHeader);
+				kparams.AddReplace("objectType", "KalturaScheduledVendorTaskData");
+			kparams.AddIfNotNull("startDate", this._StartDate);
+			kparams.AddIfNotNull("endDate", this._EndDate);
+			kparams.AddIfNotNull("scheduledEventId", this._ScheduledEventId);
 			return kparams;
 		}
 		protected override string getPropertyName(string apiName)
 		{
 			switch(apiName)
 			{
-				case FORMAT:
-					return "Format";
-				case TYPE_EQUAL:
-					return "TypeEqual";
-				case DEFAULT_HEADER:
-					return "DefaultHeader";
+				case START_DATE:
+					return "StartDate";
+				case END_DATE:
+					return "EndDate";
+				case SCHEDULED_EVENT_ID:
+					return "ScheduledEventId";
 				default:
 					return base.getPropertyName(apiName);
 			}

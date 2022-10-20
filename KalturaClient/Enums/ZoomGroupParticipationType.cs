@@ -25,45 +25,12 @@
 //
 // @ignore
 // ===================================================================================================
-using System;
-using Kaltura.Types;
-using Kaltura.Enums;
-
-namespace Kaltura.Request
+namespace Kaltura.Enums
 {
-	public static class RequestBuilderExtensions
+	public enum ZoomGroupParticipationType
 	{
-		/// <summary>
-		/// Impersonated partner id
-		/// </summary>
-		public static BaseRequestBuilder<T> WithPartnerId<T>(this BaseRequestBuilder<T> requestBuilder, int value)
-		{
-			requestBuilder.PartnerId = value;
-			return requestBuilder;
-		}
-		/// <summary>
-		/// Kaltura API session
-		/// </summary>
-		public static BaseRequestBuilder<T> WithKs<T>(this BaseRequestBuilder<T> requestBuilder, string value)
-		{
-			requestBuilder.Ks = value;
-			return requestBuilder;
-		}
-		/// <summary>
-		/// language
-		/// </summary>
-		public static BaseRequestBuilder<T> WithLanguage<T>(this BaseRequestBuilder<T> requestBuilder, string value)
-		{
-			requestBuilder.Language = value;
-			return requestBuilder;
-		}
-		/// <summary>
-		/// Response profile - this attribute will be automatically unset after every API call.
-		/// </summary>
-		public static BaseRequestBuilder<T> WithResponseProfile<T>(this BaseRequestBuilder<T> requestBuilder, BaseResponseProfile value)
-		{
-			requestBuilder.ResponseProfile = value;
-			return requestBuilder;
-		}
+		NO_CLASSIFICATION = 0,
+		OPT_IN = 1,
+		OPT_OUT = 2,
 	}
 }

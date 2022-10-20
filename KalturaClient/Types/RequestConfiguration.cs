@@ -40,12 +40,14 @@ namespace Kaltura.Types
 		#region Constants
 		public const string PARTNER_ID = "partnerId";
 		public const string KS = "ks";
+		public const string LANGUAGE = "language";
 		public const string RESPONSE_PROFILE = "responseProfile";
 		#endregion
 
 		#region Private Fields
 		private int _PartnerId = Int32.MinValue;
 		private string _Ks = null;
+		private string _Language = null;
 		private BaseResponseProfile _ResponseProfile;
 		#endregion
 
@@ -74,6 +76,19 @@ namespace Kaltura.Types
 			{ 
 				_Ks = value;
 				OnPropertyChanged("Ks");
+			}
+		}
+		/// <summary>
+		/// Use LanguageAsDouble property instead
+		/// </summary>
+		[JsonProperty]
+		public string Language
+		{
+			get { return _Language; }
+			set 
+			{ 
+				_Language = value;
+				OnPropertyChanged("Language");
 			}
 		}
 		/// <summary>
@@ -106,6 +121,10 @@ namespace Kaltura.Types
 			{
 				this._Ks = node["ks"].Value<string>();
 			}
+			if(node["language"] != null)
+			{
+				this._Language = node["language"].Value<string>();
+			}
 			if(node["responseProfile"] != null)
 			{
 				this._ResponseProfile = ObjectFactory.Create<BaseResponseProfile>(node["responseProfile"]);
@@ -121,6 +140,7 @@ namespace Kaltura.Types
 				kparams.AddReplace("objectType", "KalturaRequestConfiguration");
 			kparams.AddIfNotNull("partnerId", this._PartnerId);
 			kparams.AddIfNotNull("ks", this._Ks);
+			kparams.AddIfNotNull("language", this._Language);
 			kparams.AddIfNotNull("responseProfile", this._ResponseProfile);
 			return kparams;
 		}
@@ -132,6 +152,8 @@ namespace Kaltura.Types
 					return "PartnerId";
 				case KS:
 					return "Ks";
+				case LANGUAGE:
+					return "Language";
 				case RESPONSE_PROFILE:
 					return "ResponseProfile";
 				default:

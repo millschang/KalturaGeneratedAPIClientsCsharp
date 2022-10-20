@@ -35,80 +35,42 @@ using Newtonsoft.Json.Linq;
 
 namespace Kaltura.Types
 {
-	public class ExportToCsvOptions : ObjectBase
+	public class CategoriesCsvJobData : MappedObjectsCsvJobData
 	{
 		#region Constants
-		public const string FORMAT = "format";
-		public const string TYPE_EQUAL = "typeEqual";
-		public const string DEFAULT_HEADER = "defaultHeader";
+		public const string FILTER = "filter";
 		#endregion
 
 		#region Private Fields
-		private string _Format = null;
-		private EntryType _TypeEqual = null;
-		private NullableBoolean _DefaultHeader = (NullableBoolean)Int32.MinValue;
+		private CategoryFilter _Filter;
 		#endregion
 
 		#region Properties
 		/// <summary>
-		/// Use FormatAsDouble property instead
+		/// Use FilterAsDouble property instead
 		/// </summary>
 		[JsonProperty]
-		public string Format
+		public CategoryFilter Filter
 		{
-			get { return _Format; }
+			get { return _Filter; }
 			set 
 			{ 
-				_Format = value;
-				OnPropertyChanged("Format");
-			}
-		}
-		/// <summary>
-		/// Use TypeEqualAsDouble property instead
-		/// </summary>
-		[JsonProperty]
-		public EntryType TypeEqual
-		{
-			get { return _TypeEqual; }
-			set 
-			{ 
-				_TypeEqual = value;
-				OnPropertyChanged("TypeEqual");
-			}
-		}
-		/// <summary>
-		/// Use DefaultHeaderAsDouble property instead
-		/// </summary>
-		[JsonProperty]
-		public NullableBoolean DefaultHeader
-		{
-			get { return _DefaultHeader; }
-			set 
-			{ 
-				_DefaultHeader = value;
-				OnPropertyChanged("DefaultHeader");
+				_Filter = value;
+				OnPropertyChanged("Filter");
 			}
 		}
 		#endregion
 
 		#region CTor
-		public ExportToCsvOptions()
+		public CategoriesCsvJobData()
 		{
 		}
 
-		public ExportToCsvOptions(JToken node) : base(node)
+		public CategoriesCsvJobData(JToken node) : base(node)
 		{
-			if(node["format"] != null)
+			if(node["filter"] != null)
 			{
-				this._Format = node["format"].Value<string>();
-			}
-			if(node["typeEqual"] != null)
-			{
-				this._TypeEqual = (EntryType)StringEnum.Parse(typeof(EntryType), node["typeEqual"].Value<string>());
-			}
-			if(node["defaultHeader"] != null)
-			{
-				this._DefaultHeader = (NullableBoolean)ParseEnum(typeof(NullableBoolean), node["defaultHeader"].Value<string>());
+				this._Filter = ObjectFactory.Create<CategoryFilter>(node["filter"]);
 			}
 		}
 		#endregion
@@ -118,22 +80,16 @@ namespace Kaltura.Types
 		{
 			Params kparams = base.ToParams(includeObjectType);
 			if (includeObjectType)
-				kparams.AddReplace("objectType", "KalturaExportToCsvOptions");
-			kparams.AddIfNotNull("format", this._Format);
-			kparams.AddIfNotNull("typeEqual", this._TypeEqual);
-			kparams.AddIfNotNull("defaultHeader", this._DefaultHeader);
+				kparams.AddReplace("objectType", "KalturaCategoriesCsvJobData");
+			kparams.AddIfNotNull("filter", this._Filter);
 			return kparams;
 		}
 		protected override string getPropertyName(string apiName)
 		{
 			switch(apiName)
 			{
-				case FORMAT:
-					return "Format";
-				case TYPE_EQUAL:
-					return "TypeEqual";
-				case DEFAULT_HEADER:
-					return "DefaultHeader";
+				case FILTER:
+					return "Filter";
 				default:
 					return base.getPropertyName(apiName);
 			}

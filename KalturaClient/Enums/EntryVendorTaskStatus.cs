@@ -37,5 +37,6 @@ namespace Kaltura.Enums
 		ERROR = 6,
 		ABORTED = 7,
 		PENDING_ENTRY_READY = 8,
+		SCHEDULED = 9,
 	}
 }

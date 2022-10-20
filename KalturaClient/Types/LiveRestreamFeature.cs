@@ -35,80 +35,80 @@ using Newtonsoft.Json.Linq;
 
 namespace Kaltura.Types
 {
-	public class ExportToCsvOptions : ObjectBase
+	public class LiveRestreamFeature : LiveFeature
 	{
 		#region Constants
-		public const string FORMAT = "format";
-		public const string TYPE_EQUAL = "typeEqual";
-		public const string DEFAULT_HEADER = "defaultHeader";
+		public const string PRIMARY_URL = "primaryUrl";
+		public const string SECONDARY_URL = "secondaryUrl";
+		public const string STREAM_KEY = "streamKey";
 		#endregion
 
 		#region Private Fields
-		private string _Format = null;
-		private EntryType _TypeEqual = null;
-		private NullableBoolean _DefaultHeader = (NullableBoolean)Int32.MinValue;
+		private string _PrimaryUrl = null;
+		private string _SecondaryUrl = null;
+		private string _StreamKey = null;
 		#endregion
 
 		#region Properties
 		/// <summary>
-		/// Use FormatAsDouble property instead
+		/// Use PrimaryUrlAsDouble property instead
 		/// </summary>
 		[JsonProperty]
-		public string Format
+		public string PrimaryUrl
 		{
-			get { return _Format; }
+			get { return _PrimaryUrl; }
 			set 
 			{ 
-				_Format = value;
-				OnPropertyChanged("Format");
+				_PrimaryUrl = value;
+				OnPropertyChanged("PrimaryUrl");
 			}
 		}
 		/// <summary>
-		/// Use TypeEqualAsDouble property instead
+		/// Use SecondaryUrlAsDouble property instead
 		/// </summary>
 		[JsonProperty]
-		public EntryType TypeEqual
+		public string SecondaryUrl
 		{
-			get { return _TypeEqual; }
+			get { return _SecondaryUrl; }
 			set 
 			{ 
-				_TypeEqual = value;
-				OnPropertyChanged("TypeEqual");
+				_SecondaryUrl = value;
+				OnPropertyChanged("SecondaryUrl");
 			}
 		}
 		/// <summary>
-		/// Use DefaultHeaderAsDouble property instead
+		/// Use StreamKeyAsDouble property instead
 		/// </summary>
 		[JsonProperty]
-		public NullableBoolean DefaultHeader
+		public string StreamKey
 		{
-			get { return _DefaultHeader; }
+			get { return _StreamKey; }
 			set 
 			{ 
-				_DefaultHeader = value;
-				OnPropertyChanged("DefaultHeader");
+				_StreamKey = value;
+				OnPropertyChanged("StreamKey");
 			}
 		}
 		#endregion
 
 		#region CTor
-		public ExportToCsvOptions()
+		public LiveRestreamFeature()
 		{
 		}
 
-		public ExportToCsvOptions(JToken node) : base(node)
+		public LiveRestreamFeature(JToken node) : base(node)
 		{
-			if(node["format"] != null)
+			if(node["primaryUrl"] != null)
 			{
-				this._Format = node["format"].Value<string>();
+				this._PrimaryUrl = node["primaryUrl"].Value<string>();
 			}
-			if(node["typeEqual"] != null)
+			if(node["secondaryUrl"] != null)
 			{
-				this._TypeEqual = (EntryType)StringEnum.Parse(typeof(EntryType), node["typeEqual"].Value<string>());
+				this._SecondaryUrl = node["secondaryUrl"].Value<string>();
 			}
-			if(node["defaultHeader"] != null)
+			if(node["streamKey"] != null)
 			{
-				this._DefaultHeader = (NullableBoolean)ParseEnum(typeof(NullableBoolean), node["defaultHeader"].Value<string>());
+				this._StreamKey = node["streamKey"].Value<string>();
 			}
 		}
 		#endregion
@@ -118,22 +118,22 @@ namespace Kaltura.Types
 		{
 			Params kparams = base.ToParams(includeObjectType);
 			if (includeObjectType)
-				kparams.AddReplace("objectType", "KalturaExportToCsvOptions");
-			kparams.AddIfNotNull("format", this._Format);
-			kparams.AddIfNotNull("typeEqual", this._TypeEqual);
-			kparams.AddIfNotNull("defaultHeader", this._DefaultHeader);
+				kparams.AddReplace("objectType", "KalturaLiveRestreamFeature");
+			kparams.AddIfNotNull("primaryUrl", this._PrimaryUrl);
+			kparams.AddIfNotNull("secondaryUrl", this._SecondaryUrl);
+			kparams.AddIfNotNull("streamKey", this._StreamKey);
 			return kparams;
 		}
 		protected override string getPropertyName(string apiName)
 		{
 			switch(apiName)
 			{
-				case FORMAT:
-					return "Format";
-				case TYPE_EQUAL:
-					return "TypeEqual";
-				case DEFAULT_HEADER:
-					return "DefaultHeader";
+				case PRIMARY_URL:
+					return "PrimaryUrl";
+				case SECONDARY_URL:
+					return "SecondaryUrl";
+				case STREAM_KEY:
+					return "StreamKey";
 				default:
 					return base.getPropertyName(apiName);
 			}
